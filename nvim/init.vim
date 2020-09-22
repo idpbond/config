@@ -5,65 +5,34 @@ endif
 call plug#begin(expand('~/.vim/plugged'))
 Plug 'airblade/vim-rooter'
 Plug 'nanotech/jellybeans.vim'
-Plug 'tomasr/molokai'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'fatih/vim-go'
 Plug 'pangloss/vim-javascript'
 Plug 'maksimr/vim-jsbeautify'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
-"if has('nvim')
-  "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-"else
-  "Plug 'Shougo/deoplete.nvim'
-  "Plug 'roxma/nvim-yarp'
-  "Plug 'roxma/vim-hug-neovim-rpc'
-"endif
-"Plug 'deoplete-plugins/deoplete-jedi'
-
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'Raimondi/delimitMate'
-Plug 'altercation/vim-colors-solarized'
-Plug 'MPiccinato/wombat256'
-Plug 'kchmck/vim-coffee-script'
-Plug 'chriskempson/base16-vim'
-Plug 'dracula/vim'
-Plug 'evidens/vim-twig'
 Plug 'gregsexton/MatchTag'
-Plug 'tmhedberg/matchit'
+"Plug 'tmhedberg/matchit'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'tpope/vim-fugitive'
 Plug 'cakebaker/scss-syntax.vim'
-Plug 'StanAngeloff/php.vim'
 Plug 'Yggdroot/indentLine'
 Plug 'mhinz/vim-startify'
-Plug 'easymotion/vim-easymotion'
-Plug 'jimmyhchan/dustjs.vim'
+"Plug 'easymotion/vim-easymotion'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'rizzatti/dash.vim'
 Plug 'junegunn/vim-easy-align'
-"Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'benjie/local-npm-bin.vim'
+"Plug 'benjie/local-npm-bin.vim'
 Plug 'gabesoft/vim-ags'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-sleuth'
-Plug 'cespare/vim-toml'
-Plug 'farazdagi/vim-go-ide'
-Plug 'sbdchd/neoformat'
-"Plug 'airblade/vim-gitgutter'
-"Plug 'prettier/vim-prettier'
-Plug 'martinda/Jenkinsfile-vim-syntax'
-Plug 'leafgarland/typescript-vim'
-Plug 'posva/vim-vue'
-Plug 'vim-scripts/DrawIt'
 Plug 'tpope/vim-obsession'
-Plug 'tpope/vim-rvm'
-Plug 'Vimjas/vim-python-pep8-indent'
+"Plug 'tpope/vim-rvm'
 Plug 'editorconfig/editorconfig-vim'
 call plug#end()
 
@@ -74,61 +43,22 @@ set autoread
 set scrolloff=100
 set regexpengine=1
 set updatetime=100
-
-"" indenting
-""set cindent
-"set expandtab
 set tabstop=2
-"set shiftwidth=2
-""set softtabstop=2
-"set autoindent
 
 "autoformat js
-"autocmd BufWritePre *.js,*scss,*.ts PrettierAsync
-"let g:prettier#quickfix_enabled = 0
 autocmd BufWritePre * StripWhitespace
-"autocmd BufWritePre *.html set shiftwidth=2
-"autocmd BufWritePre *.html set tabstop=2
-"autocmd BufWritePre *.html set noexpandtab
-autocmd BufEnter *.rb Rvm
+"autocmd BufEnter *.rb Rvm
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
-
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indentLine_conceallevel = 0
 
-"let g:ale_completion_enabled = 0
-"let g:deoplete#enable_at_startup = 1
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-
-"call deoplete#custom#option('sources', {
-"\ '_': ['ale'],
-"\})
-"autocmd FileType * setlocal omnifunc=tern#Complete
-
-
-"Neosnippet tab completion
-imap <expr><tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<c-n>" : "\<tab>"
-
-"ACK.vim
-"let g:ack_qhandler = "topleft copen 30"
-
-"ag.vim
-"let g:ag_working_path_mode='r'
-
 "multi cursor
 let g:multi_cursor_quit_key='<Esc>'
-
-"Git (fugitive)
-"map <leader><leader>g :Gcommit %:p<CR>
-map <leader><leader>g :Gstatus <CR>
-
-"Dash keybinding
-nmap <silent> <leader><leader>d <Plug>DashSearch
 
 "FIXES FOR AIRLINE
 set encoding=utf-8
@@ -160,28 +90,8 @@ nmap <C-t> :silent execute '!open -a Terminal '.expand('%:p:h')<CR>
 "buffer traversal
 map <C-k> :bp<CR>
 map <C-j> :bn<CR>
-map <leader>d :bd<CR>
 map <C-s> :w<CR>
 map <c-f> :call Beautifier()<CR>
-
-"let g:ale_fix_on_save = 1
-"let g:ale_ruby_rubocop_executable = 'bundle'
-"let g:ale_python_pylint_auto_pipenv = 1
-"let g:ale_python_pylint_use_global = 0
-"let g:ale_python_pylint_options = '--extension-pkg-whitelist=cv2,torch'
-"let g:ale_linters = {
-      "\ 'ruby': ['rubocop'],
-      "\ 'python': ['pylint'],
-      "\ 'javascript': ['eslint'],
-      "\ 'html': ['prettier'],
-      "\}
-"let g:ale_fixers = {
-      "\ 'javascript': ['prettier'],
-      "\ 'python': ['black'],
-      "\}
-
-"let g:ale_python_black_auto_pipenv = 1
-"let g:ale_python_black_executable = 'black'
 
 "CtrlP bindings and ignore
 map <C-m> :CtrlPMRUFiles <CR>
@@ -232,16 +142,24 @@ highlight GitGutterChange guifg=yellow guibg=0 ctermfg=yellow
 highlight GitGutterDelete guifg=red guibg=0 ctermfg=red
 
 
-
 """ BEGIN COC
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
+let g:coc_snippet_next = '<Tab>'
+let g:coc_snippet_prev = '<S-Tab>'
+imap <C-Enter>     <Plug>(neosnippet_expand_or_jump)
+smap <C-Enter>     <Plug>(neosnippet_expand_or_jump)
+
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+inoremap <silent><expr> <Tab>
       \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -286,4 +204,6 @@ function! s:show_documentation()
   endif
 endfunction
 
+nmap <silent><Leader>hs :CocCommand git.chunkStage<CR>
+nmap <silent><Leader>hu :CocCommand git.chunkUndo<CR>
 """ END COC
