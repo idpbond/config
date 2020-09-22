@@ -15,6 +15,15 @@ Plug 'pangloss/vim-javascript'
 Plug 'maksimr/vim-jsbeautify'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+"if has('nvim')
+  "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"else
+  "Plug 'Shougo/deoplete.nvim'
+  "Plug 'roxma/nvim-yarp'
+  "Plug 'roxma/vim-hug-neovim-rpc'
+"endif
+"Plug 'deoplete-plugins/deoplete-jedi'
+
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'Raimondi/delimitMate'
 Plug 'altercation/vim-colors-solarized'
@@ -36,7 +45,8 @@ Plug 'jimmyhchan/dustjs.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'rizzatti/dash.vim'
 Plug 'junegunn/vim-easy-align'
-Plug 'dense-analysis/ale'
+"Plug 'dense-analysis/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'benjie/local-npm-bin.vim'
 Plug 'gabesoft/vim-ags'
 Plug 'sjl/gundo.vim'
@@ -45,7 +55,7 @@ Plug 'tpope/vim-sleuth'
 Plug 'cespare/vim-toml'
 Plug 'farazdagi/vim-go-ide'
 Plug 'sbdchd/neoformat'
-Plug 'airblade/vim-gitgutter'
+"Plug 'airblade/vim-gitgutter'
 "Plug 'prettier/vim-prettier'
 Plug 'martinda/Jenkinsfile-vim-syntax'
 Plug 'leafgarland/typescript-vim'
@@ -53,6 +63,8 @@ Plug 'posva/vim-vue'
 Plug 'vim-scripts/DrawIt'
 Plug 'tpope/vim-obsession'
 Plug 'tpope/vim-rvm'
+Plug 'Vimjas/vim-python-pep8-indent'
+Plug 'editorconfig/editorconfig-vim'
 call plug#end()
 
 "FIX SWAP FILE WARNING
@@ -87,9 +99,20 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 let g:indent_guides_enable_on_vim_startup = 1
+let g:indentLine_conceallevel = 0
+
+"let g:ale_completion_enabled = 0
+"let g:deoplete#enable_at_startup = 1
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
+"call deoplete#custom#option('sources', {
+"\ '_': ['ale'],
+"\})
+"autocmd FileType * setlocal omnifunc=tern#Complete
+
 
 "Neosnippet tab completion
-imap <expr><tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<c-j>" : "\<tab>"
+imap <expr><tab> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<c-n>" : "\<tab>"
 
 "ACK.vim
 "let g:ack_qhandler = "topleft copen 30"
@@ -141,16 +164,24 @@ map <leader>d :bd<CR>
 map <C-s> :w<CR>
 map <c-f> :call Beautifier()<CR>
 
-let g:ale_fix_on_save = 1
-let g:ale_ruby_rubocop_executable = 'bundle'
-let g:ale_linters = {
-      \ 'ruby': ['rubocop'],
-      \ 'javascript': ['eslint'],
-      \ 'html': [],
-      \}
-let g:ale_fixers = {
-      \ 'javascript': ['prettier'],
-      \}
+"let g:ale_fix_on_save = 1
+"let g:ale_ruby_rubocop_executable = 'bundle'
+"let g:ale_python_pylint_auto_pipenv = 1
+"let g:ale_python_pylint_use_global = 0
+"let g:ale_python_pylint_options = '--extension-pkg-whitelist=cv2,torch'
+"let g:ale_linters = {
+      "\ 'ruby': ['rubocop'],
+      "\ 'python': ['pylint'],
+      "\ 'javascript': ['eslint'],
+      "\ 'html': ['prettier'],
+      "\}
+"let g:ale_fixers = {
+      "\ 'javascript': ['prettier'],
+      "\ 'python': ['black'],
+      "\}
+
+"let g:ale_python_black_auto_pipenv = 1
+"let g:ale_python_black_executable = 'black'
 
 "CtrlP bindings and ignore
 map <C-m> :CtrlPMRUFiles <CR>
@@ -199,3 +230,60 @@ highlight StatusLine guifg=#ffffff guibg=#555555
 highlight GitGutterAdd    guifg=green guibg=0 ctermfg=green
 highlight GitGutterChange guifg=yellow guibg=0 ctermfg=yellow
 highlight GitGutterDelete guifg=red guibg=0 ctermfg=red
+
+
+
+""" BEGIN COC
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position. Coc only does snippet and additional edit on confirm.
+" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
+if exists('*complete_info')
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+""" END COC
