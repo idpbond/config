@@ -1,0 +1,10 @@
+{
+				"tsserver.enable": false,
+				"eslint.enable": true,
+				"solargraph.diagnostics": true,
+				"typescript.suggestionActions.enabled": false,
+				"coc.preferences.formatOnSaveFiletypes":["scss", "css", "javascript"],
+				"diagnostic.signOffset": 96,
+				"diagnostic.virtualText": true,
+				"diagnostic.virtualTextCurrentLineOnly": false
+}
