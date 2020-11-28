@@ -6,6 +6,8 @@ $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
 brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli;
 
+brew cask install keepassxc;
+
 $(brew --prefix)/opt/fzf/install --all;
 
 wget https://raw.githubusercontent.com/idpbond/config/master/.tmux.conf > ~/.tmux.conf;
