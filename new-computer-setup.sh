@@ -5,7 +5,7 @@ $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
 sed -i '' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose)/' ~/.zshrc
 
-brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker;
+brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker hub;
 brew install --cask keepassxc google-backup-and-sync postgres bettertouchtool;
 
 echo "Remember to:
@@ -13,7 +13,7 @@ echo "Remember to:
 	◘ create a new AWS credential (or import one)
 	◘ configure a postgres.app server with appropriate version for NEXT
 	◘ Import BTT License (email) and settings from https://raw.githubusercontent.com/idpbond/config/master/bettertouchtools-Default.json
-
+	◘ create a new token and add it to ~/.config/hub -- https://github.com/settings/tokens
 "
 
 $(brew --prefix)/opt/fzf/install --all;
