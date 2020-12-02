@@ -41,16 +41,17 @@ curl -sSL https://get.rvm.io | bash -s stable --ruby ;
 
 $(brew --prefix)/opt/fzf/install --all;
 wget https://raw.githubusercontent.com/idpbond/config/master/.tmux.conf > ~/.tmux.conf;
-wget https://raw.githubusercontent.com/idpbond/config/master/nvim > ~/.config/;
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm;
-
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
-
-nvim -c ":PlugInstall | qa\!"
 
 # NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.1/install.sh | bash ;
+
+# Neovim
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
+
+wget https://raw.githubusercontent.com/idpbond/config/master/nvim > ~/.config/;
+nvim -c ":PlugInstall | qa\!"
 
 # RVM
 curl -sSL https://rvm.io/mpapis.asc | gpg --import - ;
