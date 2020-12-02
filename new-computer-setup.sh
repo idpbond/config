@@ -5,7 +5,7 @@ $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
 sed -i '' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose)/' ~/.zshrc
 
-brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker hub;
+brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker hub tig;
 brew install --cask keepassxc google-backup-and-sync postgres bettertouchtool;
 
 echo "Remember to:
