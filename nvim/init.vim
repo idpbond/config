@@ -84,6 +84,9 @@ set termguicolors
 let g:airline#extensions#tabline#enabled = 1
 let delimitMate_expand_cr = 1
 
+" Coc Colors Override
+hi CocInfoVirtualText ctermfg=103 guifg=#46465a
+
 "OSX only: open terminal in pwd
 nmap <C-t> :silent execute '!open -a Terminal '.expand('%:p:h')<CR>
 
