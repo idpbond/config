@@ -27,7 +27,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'junegunn/vim-easy-align'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 "Plug 'benjie/local-npm-bin.vim'
-Plug 'gabesoft/vim-ags'
+Plug 'mileszs/ack.vim'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-sleuth'
