@@ -30,6 +30,7 @@ Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-obsession'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-test/vim-test'
+Plug 'valloric/matchtagalways'
 call plug#end()
 
 "FIX SWAP FILE WARNING
