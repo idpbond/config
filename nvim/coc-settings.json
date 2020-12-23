@@ -1,5 +1,5 @@
 {
-				"tsserver.enable": false,
+				"tsserver.enable": true,
 				"eslint.enable": true,
 				"solargraph.diagnostics": true,
 				"typescript.suggestionActions.enabled": false,
