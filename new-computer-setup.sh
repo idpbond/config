@@ -58,8 +58,7 @@ curl -sSL https://rvm.io/mpapis.asc | gpg --import - ;
 curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - ;
 curl -sSL https://get.rvm.io | bash -s stable --ruby ;
 
-
-
+cat ./zsh.partial >> ~/.zshrc
 
 # TODO BTT import if possible
 # wget https://raw.githubusercontent.com/idpbond/config/master/bettertouchtools-Default.json

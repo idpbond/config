@@ -1,0 +1,9 @@
+function webmp4() {
+  output_filename=$(sed -E 's|(.*)\..*$|\1.mp4|' <<< $1)
+  ffmpeg -i $1 -vcodec h264 -pix_fmt yuv420p $2 $output_filename;
+}
+
+function webvideo() {
+  echo $1;
+  ffmpeg -i $1 -vcodec h264 -pix_fmt yuv420p -c:a aac $2.mp4 -c:v libtheora -c:a libvorbis $2.ogv -c:v libvpx -c:a libvorbis $2.webm;
+}
