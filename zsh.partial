@@ -7,3 +7,8 @@ function webvideo() {
   echo $1;
   ffmpeg -i $1 -vcodec h264 -pix_fmt yuv420p -c:a aac $2.mp4 -c:v libtheora -c:a libvorbis $2.ogv -c:v libvpx -c:a libvorbis $2.webm;
 }
+
+function transparent_webm() {
+  # compresses transparent webm video
+  ffmpeg -c:v libvpx-vp9 -i $1 -pix_fmt yuva420p -auto-alt-ref 0 -crf 50 -b:v 500k $2 -y;
+}
