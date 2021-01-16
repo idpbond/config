@@ -12,3 +12,8 @@ function transparent_webm() {
   # compresses transparent webm video
   ffmpeg -c:v libvpx-vp9 -i $1 -pix_fmt yuva420p -auto-alt-ref 0 -crf 50 -b:v 500k $2 -y;
 }
+
+#ssh aliases
+alias fin="ssh nextadmin@fin.bondftw.com"
+alias next="ssh nextadmin@next.bondftw.com"
+alias dev="ssh nextadmin@192.168.42.11"
