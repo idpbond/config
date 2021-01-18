@@ -31,6 +31,7 @@ Plug 'tpope/vim-obsession'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-test/vim-test'
 Plug 'valloric/matchtagalways'
+Plug 'leafgarland/typescript-vim'
 call plug#end()
 
 "FIX SWAP FILE WARNING
@@ -111,6 +112,7 @@ highlight GitGutterAdd    guifg=green guibg=0 ctermfg=green
 highlight GitGutterChange guifg=yellow guibg=0 ctermfg=yellow
 highlight GitGutterDelete guifg=red guibg=0 ctermfg=red
 " Coc Colors Override
+hi CocFloating guibg=#333333
 hi CocInfoVirtualText ctermfg=103 guifg=#46465a
 """ END Colors
 
@@ -120,6 +122,7 @@ hi CocInfoVirtualText ctermfg=103 guifg=#46465a
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 
+let g:coc_node_path = trim(system('which node'))
 let g:coc_snippet_next = '<Tab>'
 let g:coc_snippet_prev = '<S-Tab>'
 imap <C-Enter>     <Plug>(neosnippet_expand_or_jump)
