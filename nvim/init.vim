@@ -114,6 +114,8 @@ highlight GitGutterDelete guifg=red guibg=0 ctermfg=red
 " Coc Colors Override
 hi CocFloating guibg=#333333
 hi CocInfoVirtualText ctermfg=103 guifg=#46465a
+hi CocWarningVirtualText ctermfg=136 guifg=#af8700
+hi CocErrorVirtualText ctermfg=124 guifg=red3
 """ END Colors
 
 
