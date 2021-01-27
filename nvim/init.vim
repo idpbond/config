@@ -62,6 +62,7 @@ set guioptions-=e  "non-gui tabs
 colorscheme jellybeans
 syntax on
 
+let mapleader=","
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 nmap <C-t> :silent execute '!open -a Terminal '.expand('%:p:h')<CR>
@@ -75,8 +76,8 @@ map <C-m> :CtrlPMRUFiles <CR>
 map <C-P> :CtrlP <CR>
 map <C-b> :CtrlPBuffer <CR>
 noremap <Leader>a :Ack! <cword><CR>
+map <Leader>d :bd<CR>
 
-let mapleader=","
 let g:ctrlp_open_multiple_files = 'ij'
 let g:ctrlp_custom_ignore = {'dir' : '\v[\/](node_modules|dist|bower_components|\.git|\.hg|\.svn|public)$'}
 let g:ctrlp_prompt_mappings = {'PrtDeleteEnt()': ['<c-d>']}
