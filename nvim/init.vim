@@ -32,6 +32,7 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-test/vim-test'
 Plug 'valloric/matchtagalways'
 Plug 'leafgarland/typescript-vim'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 "FIX SWAP FILE WARNING
