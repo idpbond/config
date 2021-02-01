@@ -38,9 +38,6 @@ curl -sSL https://rvm.io/mpapis.asc | gpg --import - ;
 curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - ;
 curl -sSL https://get.rvm.io | bash -s stable --ruby ;
 
-# TODO BTT import if possible
-# wget https://raw.githubusercontent.com/idpbond/config/master/bettertouchtools-Default.json
-
 # Neovim
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
