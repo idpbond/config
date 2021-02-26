@@ -5,7 +5,7 @@ $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
 sed -i'' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose)/' ~/.zshrc
 
-brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker hub tig htop pyenv coreutils;
+brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker hub tig htop pyenv coreutils alacritty;
 brew install --cask keepassxc google-backup-and-sync postgres bettertouchtool pg-commander;
 
 echo "Remember to:
@@ -20,8 +20,9 @@ $(brew --prefix)/opt/fzf/install --all;
 
 mkdir -p ~/.config;
 git clone https://github.com/idpbond/config /tmp/config;
-wget https://raw.githubusercontent.com/idpbond/config/master/.tmux.conf -O ~/.tmux.conf;
-cp -r /tmp/config/nvim -O ~/.config/;
+wget https://raw.githubusercontent.com/idpbond/config/master/.tmux.conf ~/.tmux.conf;
+cp -r /tmp/config/nvim ~/.config/;
+cp -r /tmp/config/alacritty ~/.config/;
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm;
 
