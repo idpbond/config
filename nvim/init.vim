@@ -55,6 +55,7 @@ set incsearch
 set hidden
 set termguicolors
 set noerrorbells visualbell t_vb=
+set list lcs=tab:\¦\ "preserve trailing whitespace
 set guioptions-=m  "remove menu bar
 set guioptions-=T  "remove toolbar
 set guioptions-=r  "remove right-hand scroll bar
@@ -82,8 +83,6 @@ map <Leader>d :bd<CR>
 let g:ctrlp_open_multiple_files = 'ij'
 let g:ctrlp_custom_ignore = {'dir' : '\v[\/](node_modules|dist|bower_components|\.git|\.hg|\.svn|public)$'}
 let g:ctrlp_prompt_mappings = {'PrtDeleteEnt()': ['<c-d>']}
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indentLine_conceallevel = 0
 let g:multi_cursor_quit_key='<Esc>'
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -100,6 +99,8 @@ endif
 
 """ BEGIN Colors
 "cursor settings
+highlight Conceal ctermfg=235 guifg=#222222
+highlight Whitespace ctermfg=235 guifg=#222222
 highlight Cursor guibg=orange
 highlight Cursor guibg=orange
 highlight Visual guibg=lightblue
