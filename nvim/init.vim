@@ -87,7 +87,7 @@ let g:multi_cursor_quit_key='<Esc>'
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let delimitMate_expand_cr = 1
-let g:ackprg = 'ag --vimgrep'
+let g:ackprg = 'ag --ignore test --vimgrep'
 let NERDTreeShowHidden=0
 
 autocmd BufWritePre * StripWhitespace
