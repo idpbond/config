@@ -75,7 +75,7 @@ map <C-j> :bn<CR>
 map <C-s> :w<CR>
 map <c-f> :call Beautifier()<CR>
 map <C-m> :CtrlPMRUFiles <CR>
-map <C-P> :CtrlP <CR>
+map <C-p> :CtrlP <CR>
 map <C-b> :CtrlPBuffer <CR>
 noremap <Leader>a :Ack! <cword><CR>
 map <Leader>d :bd<CR>
