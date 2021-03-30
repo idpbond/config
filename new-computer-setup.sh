@@ -13,7 +13,7 @@ echo "Remember to:
 	◘ create a new AWS credential (or import one)
 	◘ configure a postgres.app server with appropriate version for NEXT
 	◘ Import BTT License (email) and settings from https://raw.githubusercontent.com/idpbond/config/master/bettertouchtools-Default.json
-	◘ create a new token and add it to ~/.config/hub -- https://github.com/settings/tokens
+	◘ create a new token and add it to ~/.config/hub -- https://github.com/settings/tokens [repo.*, workflow, *:packages]
 "
 
 $(brew --prefix)/opt/fzf/install --all;
