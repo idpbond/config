@@ -17,9 +17,4 @@ function agvim() {
   ag -l $1 | xargs nvim
 }
 
-#ssh aliases
-alias fin="ssh nextadmin@fin.bondftw.com"
-alias next="ssh nextadmin@next.bondftw.com"
-alias dev="ssh nextadmin@192.168.42.11"
-
 autoload zmv
