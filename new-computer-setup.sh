@@ -47,6 +47,7 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
 
 nvim -c ":PlugInstall | qa\!"
+nvim -c ":CocInstall coc-prettier coc-neosnippet coc-git coc-eslint coc-tsserver coc-solargraph coc-json coc-angular | qa\!"
 
 cat ./zsh.partial >> ~/.zshrc
 
