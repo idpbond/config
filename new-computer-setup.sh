@@ -5,8 +5,36 @@ $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
 sed -i'' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose)/' ~/.zshrc
 
-brew install tmux neovim wget fzf node git gpg the_silver_searcher redis awscli docker docker-compose hub tig htop pyenv coreutils alacritty shared-mime-info;
-brew install --cask keepassxc google-backup-and-sync postgres bettertouchtool pg-commander authy keybase signal;
+brew install \
+	alacritty \
+	awscli \
+	coreutils \
+	docker \
+	docker-compose \
+	fzf \
+	git \
+	gpg \
+	htop \
+	hub \
+	neovim \
+	node \
+	pyenv \
+	redis \
+	shared-mime-info;
+	the_silver_searcher \
+	tig \
+	tmux \
+	wget;
+
+brew install --cask \
+	authy \
+	bettertouchtool \
+	google-backup-and-sync \
+	keepassxc \
+	keybase \
+	pg-commander \
+	postgres \
+	signal;
 
 echo "Remember to:
 	◘ set up Google Back Up and Sync in order to use keepass database
