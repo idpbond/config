@@ -81,3 +81,5 @@ cat ./zsh.partial >> ~/.zshrc
 
 # TODO BTT import if possible
 # wget https://raw.githubusercontent.com/idpbond/config/master/bettertouchtools-Default.json
+
+npm install -g livereloadx
