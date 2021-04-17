@@ -32,6 +32,7 @@ brew install --cask \
 	google-backup-and-sync \
 	keepassxc \
 	keybase \
+	notable \
 	pg-commander \
 	postgres \
 	signal;
