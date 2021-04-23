@@ -12,6 +12,7 @@ brew install \
 	docker \
 	docker-compose \
 	fzf \
+	gifski \
 	git \
 	gpg \
 	htop \
