@@ -25,6 +25,7 @@ brew install \
 	the_silver_searcher \
 	tig \
 	tmux \
+	youtube-dl \
 	wget;
 
 brew install --cask \
