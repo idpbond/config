@@ -61,7 +61,9 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
 
 # Fonts (TODO: Automate)
-# https://github.com/mdschweda/dejavusansmonocode
+# TODO: https://github.com/mdschweda/dejavusansmonocode
+git clone https://github.com/tonsky/FiraCode /tmp/FiraCode;
+cp /tmp/FiraCode/distr/ttf/*.ttf ~/Library/Fonts/;
 
 # NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.1/install.sh | bash ;
