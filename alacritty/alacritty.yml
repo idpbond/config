@@ -1,11 +1,11 @@
 font:
   normal:
-    family: DejaVu Sans Mono Code
+    family: Fira Code
   bold:
-    family: DejaVu Sans Mono Code
+    family: Fira Code
     style: Bold
   italic:
-    family: DejaVu Sans Mono Code
+    family: Fira Code
     style: Book
   size: 16.0
 
