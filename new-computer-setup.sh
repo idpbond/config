@@ -9,6 +9,7 @@ brew install \
 	alacritty \
 	awscli \
 	coreutils \
+	deno \
 	docker \
 	docker-compose \
 	fzf \
