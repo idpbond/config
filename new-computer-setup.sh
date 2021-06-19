@@ -12,6 +12,7 @@ brew install \
 	deno \
 	docker \
 	docker-compose \
+	ffmpeg \
 	fzf \
 	gifski \
 	git \
