@@ -62,6 +62,9 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm;
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
 
+nvim -c ":PlugInstall | qa\!"
+nvim -c ":CocInstall coc-prettier coc-neosnippet coc-git coc-eslint coc-tsserver coc-solargraph coc-json coc-angular coc-sh coc-deno | qa\!"
+
 # Fonts (TODO: Automate)
 # TODO: https://github.com/mdschweda/dejavusansmonocode
 git clone https://github.com/tonsky/FiraCode /tmp/FiraCode;
@@ -76,13 +79,6 @@ echo 'export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm"
 curl -sSL https://rvm.io/mpapis.asc | gpg --import - ;
 curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - ;
 curl -sSL https://get.rvm.io | bash -s stable --ruby ;
-
-# Neovim
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim';
-
-nvim -c ":PlugInstall | qa\!"
-nvim -c ":CocInstall coc-prettier coc-neosnippet coc-git coc-eslint coc-tsserver coc-solargraph coc-json coc-angular coc-sh coc-deno | qa\!"
 
 cat ./zsh.partial >> ~/.zshrc
 
