@@ -23,7 +23,7 @@ brew install \
 	node \
 	pyenv \
 	redis \
-	shared-mime-info;
+	shared-mime-info \
 	the_silver_searcher \
 	tig \
 	tmux \
