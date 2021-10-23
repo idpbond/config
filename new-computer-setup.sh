@@ -22,6 +22,7 @@ brew install \
 	neovim \
 	node \
 	pyenv \
+	rclone \
 	redis \
 	shared-mime-info \
 	the_silver_searcher \
