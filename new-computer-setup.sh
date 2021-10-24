@@ -3,7 +3,7 @@
 $(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh);
 $(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh);
 
-sed -i'' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose)/' ~/.zshrc
+sed -i'' 's/^plugins=(.*/plugins=(git fzf dotenv docker docker-compose ssh-agent)/' ~/.zshrc
 
 brew install \
 	alacritty \
