@@ -38,6 +38,7 @@ brew install --cask \
 	google-backup-and-sync \
 	keepassxc \
 	keybase \
+	macdown \
 	notable \
 	pg-commander \
 	postgres \
