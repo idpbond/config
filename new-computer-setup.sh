@@ -33,6 +33,7 @@ brew install \
 
 brew install --cask \
 	authy \
+	barrier \
 	bettertouchtool \
 	google-backup-and-sync \
 	keepassxc \
