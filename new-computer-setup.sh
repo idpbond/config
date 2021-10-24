@@ -41,7 +41,8 @@ brew install --cask \
 	notable \
 	pg-commander \
 	postgres \
-	signal;
+	signal \
+	slack;
 
 echo "Remember to:
 	◘ set up Google Back Up and Sync in order to use keepass database
