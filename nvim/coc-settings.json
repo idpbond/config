@@ -1,11 +1,10 @@
 {
-				"tsserver.enable": true,
-				"eslint.enable": true,
-				"solargraph.diagnostics": true,
-				"typescript.suggestionActions.enabled": false,
-				"coc.preferences.formatOnSaveFiletypes":["scss", "css", "javascript", "typescript"],
-				"diagnostic.signOffset": 80,
-				"diagnostic.virtualText": true,
-				"diagnostic.virtualTextCurrentLineOnly": false,
-				"diagnostic.enableMessage": "jump"
+	"typescript.suggestionActions.enabled": true,
+	"coc.preferences.formatOnSaveFiletypes":["scss", "css", "javascript", "typescript", "ruby", "typescriptreact"],
+	"diagnostic.virtualText": false,
+	"diagnostic.virtualTextCurrentLineOnly": false,
+	"diagnostic.signPriority": 10,
+	"diagnostic.enableMessage": "always",
+	"clangd.path": "/Users/ilia/.config/coc/extensions/coc-clangd-data/install/11.0.0/clangd_11.0.0/bin/clangd",
+	"solargraph.diagnostics": true
 }
