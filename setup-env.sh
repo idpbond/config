@@ -172,16 +172,12 @@ if [ "$IS_ROOT" = true ]; then
         fi
     fi
     echo "Switching to $TARGET_USER for remaining setup..."
-    # Copy script and config files to a location accessible by the new user
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    # Copy script to a location accessible by the new user
     SCRIPT_PATH="$0"
     TEMP_SCRIPT="/tmp/setup-env-user.sh"
     cp "$SCRIPT_PATH" "$TEMP_SCRIPT"
     chmod +x "$TEMP_SCRIPT"
     chown "$TARGET_USER:$TARGET_USER" "$TEMP_SCRIPT"
-    # Copy config files if they exist
-    [ -f "$SCRIPT_DIR/custom.lua" ] && cp "$SCRIPT_DIR/custom.lua" /tmp/ && chown "$TARGET_USER:$TARGET_USER" /tmp/custom.lua
-    [ -f "$SCRIPT_DIR/.tmux.conf" ] && cp "$SCRIPT_DIR/.tmux.conf" /tmp/ && chown "$TARGET_USER:$TARGET_USER" /tmp/.tmux.conf
     su - "$TARGET_USER" -c "bash -c 'cd /tmp && bash $TEMP_SCRIPT --user-setup'"
     exit 0
 fi
@@ -234,25 +230,24 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     echo "export LC_ALL=C.UTF-8" >> ~/.bashrc
     echo "export LANG=C.UTF-8" >> ~/.bashrc
     
+    # Download and setup tmux configuration
+    echo "Downloading tmux configuration..."
+    curl -fsSL https://raw.githubusercontent.com/idpbond/config/refs/heads/master/.tmux.conf -o ~/.tmux.conf || echo "Failed to download .tmux.conf"
+
     # Setup Neovim configuration
     echo "Setting up Neovim configuration..."
-    if [ -f custom.lua ]; then
-        git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim || echo "Nvim config already exists"
-        mkdir -p ~/.config/nvim/lua/plugins/
-        cp custom.lua ~/.config/nvim/lua/plugins/
+    if [ ! -d ~/.config/nvim ]; then
+        git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
         rm -rf ~/.config/nvim/.git
-        
-        echo "Installing Neovim plugins..."
-        nvim -n --headless '+Lazy install' '+LspInstall lua_ls ts_ls yamlls tailwindcss rubocop eslint elixirls cssls bashls' '+NoneLsInstall stylua prettier' '+TSInstallSync! typescript html css javascript ruby jsx react python go dockerfile yaml json' +qall || echo "Some plugins may have failed to install"
-    else
-        echo "Warning: custom.lua not found at ./custom.lua - skipping Neovim plugin setup"
     fi
-    
-    # Copy tmux config if available
-    if [ -f ./.tmux.conf ]; then
-        echo "Copying tmux configuration..."
-        cp ./.tmux.conf ~/
-    fi
+    mkdir -p ~/.config/nvim/lua/plugins/
+    echo "Downloading custom.lua..."
+    curl -fsSL https://raw.githubusercontent.com/idpbond/config/refs/heads/master/nvim/custom.lua -o ~/.config/nvim/lua/plugins/custom.lua || echo "Failed to download custom.lua"
+
+    echo "Installing Neovim plugins..."
+    nvim -n --headless '+Lazy install' +qall || echo "Lazy install may have failed"
+    nvim -n --headless '+LspInstall lua_ls ts_ls yamlls tailwindcss rubocop eslint elixirls cssls bashls' +qall || echo "LspInstall may have failed"
+    nvim -n --headless '+TSInstallSync! typescript html css javascript ruby python go dockerfile yaml json' +qall || echo "TSInstall may have failed"
     
     # Set terminal environment variables
     echo "export TERM=xterm-256color" >> ~/.bashrc
