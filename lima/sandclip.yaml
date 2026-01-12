@@ -1,0 +1,107 @@
+# Lima template for development sandbox environment
+# Usage: limactl create --name=devbox ./lima-template.yaml
+#        limactl start devbox
+#        limactl shell devbox
+
+# VM Configuration
+vmType: "vz" # Use Apple Virtualization.framework on macOS (faster than QEMU)
+arch: null # Auto-detect (aarch64 on Apple Silicon, x86_64 on Intel)
+
+cpus: 4
+memory: "8GiB"
+disk: "50GiB"
+
+# Debian Trixie (13) images
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
+    arch: "aarch64"
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
+    arch: "x86_64"
+
+mounts:
+
+# Port forwarding for common development ports
+portForwards:
+  - guestPortRange: [3000, 3100]
+    hostPortRange: [3000, 3100]
+  - guestPortRange: [4000, 4100]
+    hostPortRange: [4000, 4100]
+  - guestPortRange: [5000, 5100]
+    hostPortRange: [5000, 5100]
+  - guestPortRange: [8000, 9000]
+    hostPortRange: [8000, 9000]
+
+# Use custom DNS (disable host resolver)
+hostResolver:
+  enabled: false
+dns:
+  - 1.1.1.1
+  - 8.8.8.8
+
+# VM options for vz (Virtualization.framework)
+vmOpts:
+  vz:
+    rosetta:
+      enabled: true
+      binfmt: true
+
+# Provisioning scripts (executed in order)
+provision:
+  # Fix MTU for virtualized network (prevents TLS hangs)
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      PRIMARY_IF=$(ip route | grep default | awk '{print $5}' | head -1)
+      if [ -n "$PRIMARY_IF" ]; then
+        ip link set "$PRIMARY_IF" mtu 1400
+      fi
+
+  # Download and run setup script
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      cd /tmp
+      curl -fsSL https://raw.githubusercontent.com/idpbond/config/refs/heads/master/setup-env.sh -o setup-env.sh
+      chmod +x setup-env.sh
+      # Run with Lima user and non-interactive mode
+      TARGET_USER="{{.User}}" NONINTERACTIVE=1 ./setup-env.sh
+
+# Probes to verify provisioning completed successfully
+probes:
+  - description: "node is installed"
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      export PATH="$HOME/.asdf/shims:$PATH"
+      node --version
+    hint: "Node.js installation may have failed. Check asdf setup."
+  - description: "docker is available"
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      docker --version
+    hint: "Docker installation may have failed."
+  - description: "claude is installed"
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      export PATH="$HOME/.asdf/shims:$PATH"
+      command -v claude
+    hint: "Claude Code installation may have failed."
+
+# Message displayed after VM is ready
+message: |
+  Development sandbox is ready!
+
+  To access:
+    limactl shell {{.Name}}
+
+  Installed tools:
+    - Node.js 24.4.1 (via asdf)
+    - Docker (rootful, sudo-less)
+    - Claude Code CLI
+    - Neovim, tmux, fzf, ripgrep, lazygit
+
+  Home directory is mounted read-write.
