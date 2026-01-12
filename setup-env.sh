@@ -54,7 +54,7 @@ if [ "$DISTRO" = "alpine" ]; then
     
     echo "Installing system dependencies..."
     # Alpine package mappings (sudo removed from list since installed above, nodejs and npm added for Alpine)
-    PACKAGES="openssl curl wget git tar lua5.4 bash go ripgrep ninja cmake gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-base fzf python3 py3-virtualenv neovim ca-certificates shadow nodejs npm docker"
+    PACKAGES="openssl curl wget git tar lua5.4 bash zsh go ripgrep ninja cmake gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-base fzf python3 py3-virtualenv neovim ca-certificates shadow nodejs npm docker"
 
     if [ "$IS_ROOT" = true ]; then
         apk add --no-cache $PACKAGES
@@ -75,7 +75,7 @@ else
     
     echo "Installing system dependencies..."
     # Debian package list (sudo removed from list since installed above)
-    PACKAGES="openssl curl wget git tar lua5.4 bash golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release"
+    PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release"
 
     if [ "$IS_ROOT" = true ]; then
         apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
@@ -146,15 +146,15 @@ if [ "$IS_ROOT" = true ]; then
     if ! id "$TARGET_USER" &>/dev/null; then
         echo "Creating user: $TARGET_USER..."
         if [ "$DISTRO" = "alpine" ]; then
-            # Alpine uses adduser and bash is at /bin/bash
-            adduser -D -s /bin/bash "$TARGET_USER"
+            # Alpine uses adduser
+            adduser -D -s /bin/zsh "$TARGET_USER"
             # Add to wheel group for sudo access
             adduser "$TARGET_USER" wheel
             # Add to docker group
             adduser "$TARGET_USER" docker
         else
             # Debian/Ubuntu uses useradd
-            useradd -m -s /bin/bash "$TARGET_USER"
+            useradd -m -s /bin/zsh "$TARGET_USER"
             # Add to docker group
             usermod -aG docker "$TARGET_USER"
         fi
@@ -190,10 +190,18 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     echo "Adding $USER to docker group..."
     sudo usermod -aG docker "$USER" || echo "Could not add to docker group (may need to log out and back in)"
 
-    # Install oh-my-bash
-    echo "Installing oh-my-bash..."
-    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --unattended || echo "Oh-my-bash already installed"
-    
+    # Change default shell to zsh
+    echo "Setting zsh as default shell..."
+    sudo chsh -s /bin/zsh "$USER" || echo "Could not change shell to zsh"
+
+    # Install oh-my-zsh
+    echo "Installing oh-my-zsh..."
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || echo "Oh-my-zsh installation failed"
+    else
+        echo "Oh-my-zsh already installed"
+    fi
+
     # Configure Node.js installation (different approach for Alpine vs Debian)
     if [ "$DISTRO" = "alpine" ]; then
         echo "Using system Node.js and npm (Alpine)..."
@@ -201,19 +209,19 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     else
         # Configure asdf for Debian systems
         echo "Configuring asdf..."
-        echo 'export PATH="$HOME/.asdf/shims:$PATH"' >> ~/.bashrc
-        echo '. <(asdf completion bash)' >> ~/.bashrc
+        echo 'export PATH="$HOME/.asdf/shims:$PATH"' >> ~/.zshrc
+        echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
 
-        # Source bashrc to get asdf in current session
+        # Source zshrc to get asdf in current session
         export PATH="$HOME/.asdf/shims:$PATH"
-        
+
         # Install Node.js via asdf
         echo "Installing Node.js $NODE_VERSION..."
         asdf plugin add nodejs || echo "nodejs plugin already added"
         asdf install nodejs $NODE_VERSION
         asdf set --home nodejs $NODE_VERSION
     fi
-    
+
     # Install claude-code
     echo "Installing @anthropic-ai/claude-code..."
     if [ "$DISTRO" = "alpine" ]; then
@@ -223,12 +231,12 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
         # On Debian with asdf, npm should work without sudo
         npm i -g @anthropic-ai/claude-code
     fi
-    
+
     # Configure fzf and locale
     echo "Configuring environment..."
-    echo 'eval "$(fzf --bash)"' >> ~/.bashrc
-    echo "export LC_ALL=C.UTF-8" >> ~/.bashrc
-    echo "export LANG=C.UTF-8" >> ~/.bashrc
+    echo 'source <(fzf --zsh)' >> ~/.zshrc
+    echo "export LC_ALL=C.UTF-8" >> ~/.zshrc
+    echo "export LANG=C.UTF-8" >> ~/.zshrc
     
     # Download and setup tmux configuration
     echo "Downloading tmux configuration..."
@@ -250,8 +258,8 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     nvim -n --headless '+TSInstallSync! typescript html css javascript ruby python go dockerfile yaml json' +qall || echo "TSInstall may have failed"
     
     # Set terminal environment variables
-    echo "export TERM=xterm-256color" >> ~/.bashrc
-    echo "export COLORTERM=24bit" >> ~/.bashrc
+    echo "export TERM=xterm-256color" >> ~/.zshrc
+    echo "export COLORTERM=24bit" >> ~/.zshrc
 
     # Setup SSH authorized_keys
     echo "Setting up SSH access..."
