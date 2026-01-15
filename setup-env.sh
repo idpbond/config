@@ -75,7 +75,7 @@ else
     
     echo "Installing system dependencies..."
     # Debian package list (sudo removed from list since installed above)
-    PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release"
+    PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release rsync"
 
     if [ "$IS_ROOT" = true ]; then
         apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
@@ -98,6 +98,36 @@ else
         sudo rm -f /etc/apt/keyrings/docker.asc
         sudo apt-get update
         sudo apt-get install -y docker.io docker-compose
+    fi
+
+    # Install snapd and certbot with route53 plugin
+    echo "Installing snapd and certbot..."
+    if [ "$IS_ROOT" = true ]; then
+        apt-get install -y snapd
+        # Ensure snapd is running
+        systemctl enable --now snapd.socket || true
+        # Install core snap first (required for classic snaps)
+        snap install core || true
+        # Install certbot
+        snap install --classic certbot || true
+        # Create symlink for certbot
+        ln -sf /snap/bin/certbot /usr/bin/certbot || true
+        # Trust plugin with root BEFORE installing the plugin
+        snap set certbot trust-plugin-with-root=ok || true
+        # Install certbot-dns-route53 plugin
+        snap install certbot-dns-route53 || true
+        # Connect the plugin to certbot
+        snap connect certbot:plugin certbot-dns-route53 || true
+    else
+        sudo apt-get install -y snapd
+        sudo systemctl enable --now snapd.socket || true
+        sudo snap install core || true
+        sudo snap install --classic certbot || true
+        sudo ln -sf /snap/bin/certbot /usr/bin/certbot || true
+        # Trust plugin with root BEFORE installing the plugin
+        sudo snap set certbot trust-plugin-with-root=ok || true
+        sudo snap install certbot-dns-route53 || true
+        sudo snap connect certbot:plugin certbot-dns-route53 || true
     fi
 
     # Clean apt cache
