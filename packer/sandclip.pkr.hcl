@@ -25,7 +25,7 @@ variable "ssh_password" {
 
 # ---------- QEMU sources (qcow2) ----------
 
-source "qemu" "sandclip-amd64" {
+source "qemu" "amd64" {
   iso_url          = "https://cloud.debian.org/images/cloud/${var.debian_version}/latest/debian-13-genericcloud-amd64.qcow2"
   iso_checksum     = "none"
   disk_image       = true
@@ -53,7 +53,7 @@ source "qemu" "sandclip-amd64" {
   cd_label = "cidata"
 }
 
-source "qemu" "sandclip-arm64" {
+source "qemu" "arm64" {
   iso_url          = "https://cloud.debian.org/images/cloud/${var.debian_version}/latest/debian-13-genericcloud-arm64.qcow2"
   iso_checksum     = "none"
   disk_image       = true
@@ -86,7 +86,7 @@ source "qemu" "sandclip-arm64" {
 
 # ---------- Docker sources (OCI) ----------
 
-source "docker" "sandclip-amd64" {
+source "docker" "amd64" {
   image  = "amd64/debian:${var.debian_version}-slim"
   commit = true
   changes = [
@@ -99,7 +99,7 @@ source "docker" "sandclip-amd64" {
   ]
 }
 
-source "docker" "sandclip-arm64" {
+source "docker" "arm64" {
   image  = "arm64v8/debian:${var.debian_version}-slim"
   commit = true
   changes = [
@@ -118,8 +118,8 @@ build {
   name = "qcow2"
 
   sources = [
-    "source.qemu.sandclip-amd64",
-    "source.qemu.sandclip-arm64",
+    "source.qemu.amd64",
+    "source.qemu.arm64",
   ]
 
   provisioner "file" {
@@ -145,6 +145,7 @@ build {
 
   post-processor "compress" {
     output = "output-sandclip-{{.BuildName}}/sandclip-{{.BuildName}}.qcow2.gz"
+    keep_input_artifact = true
   }
 }
 
@@ -152,8 +153,8 @@ build {
   name = "docker"
 
   sources = [
-    "source.docker.sandclip-amd64",
-    "source.docker.sandclip-arm64",
+    "source.docker.amd64",
+    "source.docker.arm64",
   ]
 
   provisioner "file" {

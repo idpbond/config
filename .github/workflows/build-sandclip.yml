@@ -47,7 +47,7 @@ jobs:
         working-directory: packer
         env:
           PACKER_LOG: "1"
-        run: packer build -only='qcow2.qemu.sandclip-amd64' sandclip.pkr.hcl
+        run: packer build -only='qcow2.qemu.amd64' sandclip.pkr.hcl
 
       - name: Upload qcow2 artifact (amd64)
         uses: actions/upload-artifact@v4
@@ -60,7 +60,7 @@ jobs:
         working-directory: packer
         env:
           PACKER_LOG: "1"
-        run: packer build -only='qcow2.qemu.sandclip-arm64' sandclip.pkr.hcl
+        run: packer build -only='qcow2.qemu.arm64' sandclip.pkr.hcl
 
       - name: Upload qcow2 artifact (arm64)
         uses: actions/upload-artifact@v4
@@ -78,7 +78,7 @@ jobs:
 
       - name: Build Docker image (amd64)
         working-directory: packer
-        run: packer build -only='docker.docker.sandclip-amd64' sandclip.pkr.hcl
+        run: packer build -only='docker.docker.amd64' sandclip.pkr.hcl
 
       - name: Push Docker image (amd64)
         run: |
@@ -109,7 +109,7 @@ jobs:
 
       - name: Build Docker image (arm64)
         working-directory: packer
-        run: packer build -only='docker.docker.sandclip-arm64' sandclip.pkr.hcl
+        run: packer build -only='docker.docker.arm64' sandclip.pkr.hcl
 
       - name: Push Docker image (arm64)
         run: |
