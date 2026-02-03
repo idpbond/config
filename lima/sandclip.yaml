@@ -1,7 +1,16 @@
-# Lima template for development sandbox environment
-# Usage: limactl create --name=devbox ./lima-template.yaml
-#        limactl start devbox
-#        limactl shell devbox
+# Lima template for Sandclip development environment
+#
+# Usage:
+#   limactl create --name=sandclip https://raw.githubusercontent.com/idpbond/config/master/lima/sandclip.yaml
+#   limactl start sandclip
+#   limactl shell sandclip
+#
+# The prebuilt qcow2 images from GitHub Releases include all tools already
+# installed (Node.js, Docker, Neovim, Claude Code, etc). The provisioning
+# scripts below are kept as no-op fallbacks — if the image is already
+# provisioned, they exit early.
+#
+# To override mount paths, edit the `mounts` section or pass --mount flags.
 
 # VM Configuration
 vmType: "vz" # Use Apple Virtualization.framework on macOS (faster than QEMU)
@@ -11,8 +20,13 @@ cpus: 4
 memory: "8GiB"
 disk: "50GiB"
 
-# Debian Trixie (13) images
+# Prebuilt Sandclip images from GitHub Releases (fall back to base Debian cloud images)
 images:
+  - location: "https://github.com/idpbond/config/releases/latest/download/sandclip-arm64.qcow2.gz"
+    arch: "aarch64"
+  - location: "https://github.com/idpbond/config/releases/latest/download/sandclip-amd64.qcow2.gz"
+    arch: "x86_64"
+  # Fallback: base Debian Trixie cloud images (will need full provisioning)
   - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
     arch: "aarch64"
   - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
@@ -45,7 +59,7 @@ vmOpts:
       enabled: true
       binfmt: true
 
-# Provisioning scripts (executed in order)
+# Provisioning scripts — only run if the image was not prebuilt
 provision:
   # Fix MTU for virtualized network (prevents TLS hangs)
   - mode: system
@@ -57,49 +71,30 @@ provision:
         ip link set "$PRIMARY_IF" mtu 1400
       fi
 
-  # Download and run setup script
+  # Download and run setup script (skips if already provisioned)
   - mode: system
     script: |
       #!/bin/bash
       set -eux -o pipefail
+      # Skip if the image was already provisioned by Packer
+      if id human &>/dev/null && command -v nvim &>/dev/null; then
+        echo "Image already provisioned, skipping setup-env.sh"
+        exit 0
+      fi
       cd /tmp
       curl -fsSL https://raw.githubusercontent.com/idpbond/config/refs/heads/master/setup-env.sh -o setup-env.sh
       chmod +x setup-env.sh
-      # Run with Lima user and non-interactive mode
       TARGET_USER="{{.User}}" NONINTERACTIVE=1 ./setup-env.sh
-
-# Probes to verify provisioning completed successfully
-probes:
-  - description: "node is installed"
-    script: |
-      #!/bin/bash
-      set -eux -o pipefail
-      export PATH="$HOME/.asdf/shims:$PATH"
-      node --version
-    hint: "Node.js installation may have failed. Check asdf setup."
-  - description: "docker is available"
-    script: |
-      #!/bin/bash
-      set -eux -o pipefail
-      docker --version
-    hint: "Docker installation may have failed."
-  - description: "claude is installed"
-    script: |
-      #!/bin/bash
-      set -eux -o pipefail
-      export PATH="$HOME/.asdf/shims:$PATH"
-      command -v claude
-    hint: "Claude Code installation may have failed."
 
 # Message displayed after VM is ready
 message: |
-  Development sandbox is ready!
+  Sandclip development environment is ready!
 
   To access:
     limactl shell {{.Name}}
 
   Installed tools:
-    - Node.js 24.4.1 (via asdf)
+    - Node.js (via asdf)
     - Docker (rootful, sudo-less)
     - Claude Code CLI
     - Neovim, tmux, fzf, ripgrep, lazygit

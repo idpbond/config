@@ -7,6 +7,10 @@ DEBIAN_VERSION="${DEBIAN_VERSION:-trixie-slim}"
 TARGET_USER="${TARGET_USER:-human}"
 # Set NONINTERACTIVE=0 to enable interactive commands (e.g., exec newgrp at the end)
 NONINTERACTIVE="${NONINTERACTIVE:-1}"
+# Set SKIP_DOCKER=1 to skip Docker installation (e.g., in container builds)
+SKIP_DOCKER="${SKIP_DOCKER:-0}"
+# Set SKIP_SNAP=1 to skip snapd/certbot installation (e.g., in container builds)
+SKIP_SNAP="${SKIP_SNAP:-0}"
 
 echo "Starting development environment setup..."
 
@@ -53,6 +57,7 @@ else
     sudo update-ca-certificates
 fi
 
+if [ "$SKIP_DOCKER" != "1" ]; then
 # Install Docker from Debian repos (more reliable than official Docker repo)
 echo "Installing Docker..."
 # Remove any leftover Docker repo config that may cause apt to hang
@@ -67,7 +72,9 @@ else
     sudo apt-get update
     sudo apt-get install -y docker.io docker-compose
 fi
+fi
 
+if [ "$SKIP_SNAP" != "1" ]; then
 # Install snapd and certbot with route53 plugin
 echo "Installing snapd and certbot..."
 if [ "$IS_ROOT" = true ]; then
@@ -96,6 +103,7 @@ else
     sudo snap set certbot trust-plugin-with-root=ok || true
     sudo snap install certbot-dns-route53 || true
     sudo snap connect certbot:plugin certbot-dns-route53 || true
+fi
 fi
 
 # Clean apt cache
@@ -144,7 +152,9 @@ if [ "$IS_ROOT" = true ]; then
         echo "Creating user: $TARGET_USER..."
         useradd -m -s /bin/zsh "$TARGET_USER"
         # Add to docker group
-        usermod -aG docker "$TARGET_USER"
+        if [ "$SKIP_DOCKER" != "1" ]; then
+            usermod -aG docker "$TARGET_USER"
+        fi
         # Add human to sudoers with full privileges
         echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
     else
@@ -152,7 +162,9 @@ if [ "$IS_ROOT" = true ]; then
         # Ensure user has sudo privileges
         echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
         # Ensure user is in docker group
-        usermod -aG docker "$TARGET_USER" || true
+        if [ "$SKIP_DOCKER" != "1" ]; then
+            usermod -aG docker "$TARGET_USER" || true
+        fi
     fi
     echo "Switching to $TARGET_USER for remaining setup..."
     # Copy script to a location accessible by the new user
@@ -161,7 +173,7 @@ if [ "$IS_ROOT" = true ]; then
     cp "$SCRIPT_PATH" "$TEMP_SCRIPT"
     chmod +x "$TEMP_SCRIPT"
     chown "$TARGET_USER:$TARGET_USER" "$TEMP_SCRIPT"
-    su - "$TARGET_USER" -c "bash -c 'cd /tmp && bash $TEMP_SCRIPT --user-setup'"
+    su - "$TARGET_USER" -c "bash -c 'cd /tmp && SKIP_DOCKER=$SKIP_DOCKER SKIP_SNAP=$SKIP_SNAP NONINTERACTIVE=$NONINTERACTIVE bash $TEMP_SCRIPT --user-setup'"
     exit 0
 fi
 
@@ -169,9 +181,11 @@ fi
 if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     echo "Running user-specific setup for user: $USER..."
 
-    # Add user to docker group for sudo-less docker access
-    echo "Adding $USER to docker group..."
-    sudo usermod -aG docker "$USER" || echo "Could not add to docker group (may need to log out and back in)"
+    if [ "$SKIP_DOCKER" != "1" ]; then
+        # Add user to docker group for sudo-less docker access
+        echo "Adding $USER to docker group..."
+        sudo usermod -aG docker "$USER" || echo "Could not add to docker group (may need to log out and back in)"
+    fi
 
     # Change default shell to zsh
     echo "Setting zsh as default shell..."
@@ -243,8 +257,10 @@ EOF
 
     if [ "$NONINTERACTIVE" = "1" ]; then
         echo "Setup complete!"
-    else
+    elif [ "$SKIP_DOCKER" != "1" ]; then
         echo "Setup complete! Starting new shell with docker group access..."
         exec newgrp docker
+    else
+        echo "Setup complete!"
     fi
 fi

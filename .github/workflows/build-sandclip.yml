@@ -1,0 +1,190 @@
+name: Build Sandclip Images
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'setup-env.sh'
+      - 'packer/**'
+      - '.github/workflows/build-sandclip.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/idpbond/sandclip
+
+jobs:
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt-get update && sudo apt-get install -y packer
+
+      - name: Install QEMU
+        run: |
+          sudo apt-get install -y qemu-system-x86 qemu-utils cloud-image-utils
+
+      - name: Init Packer plugins
+        working-directory: packer
+        run: packer init sandclip.pkr.hcl
+
+      - name: Build qcow2 (amd64)
+        working-directory: packer
+        run: packer build -only='qcow2.qemu.sandclip-amd64' sandclip.pkr.hcl
+
+      - name: Upload qcow2 artifact (amd64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandclip-amd64-qcow2
+          path: packer/output-sandclip-amd64/sandclip-amd64.qcow2.gz
+          retention-days: 5
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image (amd64)
+        working-directory: packer
+        run: packer build -only='docker.docker.sandclip-amd64' sandclip.pkr.hcl
+
+      - name: Push Docker image (amd64)
+        run: |
+          docker tag ghcr.io/idpbond/sandclip:latest ${{ env.IMAGE_NAME }}:amd64
+          docker push ${{ env.IMAGE_NAME }}:amd64
+
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt-get update && sudo apt-get install -y packer
+
+      - name: Install QEMU
+        run: |
+          sudo apt-get install -y qemu-system-arm qemu-utils qemu-efi-aarch64 cloud-image-utils
+
+      - name: Init Packer plugins
+        working-directory: packer
+        run: packer init sandclip.pkr.hcl
+
+      - name: Build qcow2 (arm64)
+        working-directory: packer
+        run: packer build -only='qcow2.qemu.sandclip-arm64' sandclip.pkr.hcl
+
+      - name: Upload qcow2 artifact (arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandclip-arm64-qcow2
+          path: packer/output-sandclip-arm64/sandclip-arm64.qcow2.gz
+          retention-days: 5
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image (arm64)
+        working-directory: packer
+        run: packer build -only='docker.docker.sandclip-arm64' sandclip.pkr.hcl
+
+      - name: Push Docker image (arm64)
+        run: |
+          docker tag ghcr.io/idpbond/sandclip:latest ${{ env.IMAGE_NAME }}:arm64
+          docker push ${{ env.IMAGE_NAME }}:arm64
+
+  release:
+    needs: [build-amd64, build-arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download qcow2 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Generate release tag
+        id: tag
+        run: |
+          TAG="v$(date +%Y%m%d)-${GITHUB_SHA::7}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "Sandclip ${{ steps.tag.outputs.tag }}"
+          body: |
+            Sandclip development environment images.
+
+            **qcow2** (for Lima / QEMU):
+            - `sandclip-amd64.qcow2.gz` — x86_64
+            - `sandclip-arm64.qcow2.gz` — aarch64
+
+            **OCI** (Docker):
+            ```
+            docker pull ghcr.io/idpbond/sandclip:latest
+            ```
+
+            Built from `${{ github.sha }}`.
+          files: |
+            artifacts/sandclip-amd64-qcow2/sandclip-amd64.qcow2.gz
+            artifacts/sandclip-arm64-qcow2/sandclip-arm64.qcow2.gz
+          generate_release_notes: true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push multi-arch manifest
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          docker manifest create ${{ env.IMAGE_NAME }}:latest \
+            ${{ env.IMAGE_NAME }}:amd64 \
+            ${{ env.IMAGE_NAME }}:arm64
+          docker manifest push ${{ env.IMAGE_NAME }}:latest
+
+          docker manifest create ${{ env.IMAGE_NAME }}:$TAG \
+            ${{ env.IMAGE_NAME }}:amd64 \
+            ${{ env.IMAGE_NAME }}:arm64
+          docker manifest push ${{ env.IMAGE_NAME }}:$TAG
+
+      - name: Summary
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          echo "## Sandclip Build Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Usage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Docker:**" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "docker run -it --rm -v \$(pwd):/workspace ghcr.io/idpbond/sandclip:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Lima:**" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "limactl create --name=sandclip https://raw.githubusercontent.com/idpbond/config/master/lima/sandclip.yaml" >> $GITHUB_STEP_SUMMARY
+          echo "limactl start sandclip" >> $GITHUB_STEP_SUMMARY
+          echo "limactl shell sandclip" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
