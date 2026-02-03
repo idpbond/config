@@ -37,7 +37,7 @@ jobs:
 
       - name: Install QEMU
         run: |
-          sudo apt-get install -y qemu-system-x86 qemu-utils cloud-image-utils
+          sudo apt-get install -y qemu-system-x86 qemu-system-arm qemu-utils qemu-efi-aarch64 cloud-image-utils
 
       - name: Init Packer plugins
         working-directory: packer
@@ -54,6 +54,19 @@ jobs:
         with:
           name: sandclip-amd64-qcow2
           path: packer/output-sandclip-amd64/sandclip-amd64.qcow2.gz
+          retention-days: 5
+
+      - name: Build qcow2 (arm64 cross-build via TCG emulation)
+        working-directory: packer
+        env:
+          PACKER_LOG: "1"
+        run: packer build -only='qcow2.qemu.sandclip-arm64' sandclip.pkr.hcl
+
+      - name: Upload qcow2 artifact (arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandclip-arm64-qcow2
+          path: packer/output-sandclip-arm64/sandclip-arm64.qcow2.gz
           retention-days: 5
 
       - name: Log in to GHCR
@@ -77,38 +90,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
       - name: Install Packer
         run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           sudo apt-get update && sudo apt-get install -y packer
 
-      - name: Install QEMU
-        run: |
-          sudo apt-get install -y qemu-system-arm qemu-utils qemu-efi-aarch64 cloud-image-utils
-
       - name: Init Packer plugins
         working-directory: packer
         run: packer init sandclip.pkr.hcl
-
-      - name: Build qcow2 (arm64)
-        working-directory: packer
-        env:
-          PACKER_LOG: "1"
-        run: packer build -only='qcow2.qemu.sandclip-arm64' sandclip.pkr.hcl
-
-      - name: Upload qcow2 artifact (arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: sandclip-arm64-qcow2
-          path: packer/output-sandclip-arm64/sandclip-arm64.qcow2.gz
-          retention-days: 5
 
       - name: Log in to GHCR
         uses: docker/login-action@v3

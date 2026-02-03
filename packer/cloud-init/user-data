@@ -1,12 +1,12 @@
 #cloud-config
+ssh_pwauth: true
+
 users:
   - name: packer
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     lock_passwd: false
     plain_text_passwd: packer
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDITNF2OzvDUD6Jw+agvqP59fOnVDnH1Nu0uxYTQdB7+EqBuTmAd42Fd26bqhWSdYd+Vnxhb2amXu5cm9tjooEpBjRNkHGmmHZsObCzZTLt7y3U0sq7n5wWr5Id4lhQhpSzRTNXqQab6UIyfpRoi4qR08Ef89yPsfzRuJHQ2YzwcCeIlojI1ic+OWFOfC94aIQmOpwGghAtbCpF7aj6x0NWFO3e5hp4na3CGX0ZOItQY/bKCsdlpZ9u4X5c+BhvKHNzuswq6bVhP01gMzd63iX+KCPLLZDQIswvPJjfjy33DDVwhXewJAiOF1m8CbRvZp4NBIVvZ7042buk6kd1kPB/O2/h+tt9DWdLbLyiXecUvVxZ8Tmdckyl+scahScHSBlNP8lB2ezUm+Al+DQDWwzaemYzrJC9c5BtmJ11iEUQyVpPpItdNc7EygY9whQ53KkITOqjPh5cRKolrn7+BEt/Ohhjhazfnlax8Z2W5dB17N4aTA7m2+ZrwVF2Inkzp8c= packer
 
 growpart:
   mode: auto

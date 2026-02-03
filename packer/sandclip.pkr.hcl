@@ -59,14 +59,14 @@ source "qemu" "sandclip-arm64" {
   disk_image       = true
   disk_size        = "20G"
   format           = "qcow2"
-  accelerator      = "kvm"
+  accelerator      = "tcg"
   machine_type     = "virt"
   net_device       = "virtio-net"
   disk_interface   = "virtio"
   headless         = true
   ssh_username     = "packer"
   ssh_password     = var.ssh_password
-  ssh_timeout      = "15m"
+  ssh_timeout      = "60m"
   shutdown_command  = "sudo shutdown -P now"
   output_directory = "output-sandclip-arm64"
   vm_name          = "sandclip-arm64.qcow2"
@@ -74,7 +74,7 @@ source "qemu" "sandclip-arm64" {
   qemuargs = [
     ["-m", "4096"],
     ["-smp", "4"],
-    ["-cpu", "host"],
+    ["-cpu", "cortex-a57"],
     ["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"],
   ]
   cd_files = [
