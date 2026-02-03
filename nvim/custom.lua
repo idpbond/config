@@ -14,14 +14,14 @@ return {
   },
   {
     event = { "VeryLazy" },
-    "ggandor/leap.nvim",
+    url = "https://codeberg.org/andyg/leap.nvim",
     keys = {
-      { "<Plug>(leap-forward-to)", mode = { "n", "x", "o" } },
+      { "<Plug>(leap-forward-to)",  mode = { "n", "x", "o" } },
       { "<Plug>(leap-backward-to)", mode = { "n", "x", "o" } },
       { "<Plug>(leap-from-window)", mode = { "n", "x", "o" } },
     },
     config = function(_, opts)
-      local leap = require "leap"
+      local leap = require("leap")
       for k, v in pairs(opts) do
         leap.opts[k] = v
       end
@@ -55,7 +55,9 @@ return {
             local filtered_buffers = {}
             for _, buffer in ipairs(buffers) do
               local name = vim.api.nvim_buf_get_name(buffer)
-              if name:sub(1, 11) == "gitsigns://" then table.insert(filtered_buffers, buffer) end
+              if name:sub(1, 11) == "gitsigns://" then
+                table.insert(filtered_buffers, buffer)
+              end
             end
             if #filtered_buffers == 0 then
               require("gitsigns").diffthis()
@@ -114,14 +116,14 @@ return {
     dependencies = { "folke/snacks.nvim" },
     config = true,
     keys = {
-      { "<leader>a", nil, desc = "AI/Claude Code" },
-      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
-      { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
-      { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+      { "<leader>a",  nil,                              desc = "AI/Claude Code" },
+      { "<leader>ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
+      { "<leader>af", "<cmd>ClaudeCodeFocus<cr>",       desc = "Focus Claude" },
+      { "<leader>ar", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
       { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
       { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
-      { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
-      { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+      { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>",       desc = "Add current buffer" },
+      { "<leader>as", "<cmd>ClaudeCodeSend<cr>",        mode = "v",                  desc = "Send to Claude" },
       {
         "<leader>as",
         "<cmd>ClaudeCodeTreeAdd<cr>",
@@ -130,15 +132,15 @@ return {
       },
       -- Diff management
       { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
-      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny diff" },
     },
   },
 
   {
     "rebelot/heirline.nvim",
     opts = function(_, opts)
-      local status = require "astroui.status"
-      local path_func = status.provider.filename { modify = ":.", fallback = "" }
+      local status = require("astroui.status")
+      local path_func = status.provider.filename({ modify = ":.", fallback = "" })
 
       opts.statusline = { -- statusline
         hl = { fg = "fg", bg = "bg" },
@@ -148,7 +150,12 @@ return {
         status.component.git_diff(),
         status.component.diagnostics(),
         {
-          status.component.separated_path { path_func = path_func, separator = "/", suffix = false, max_depth = 10 },
+          status.component.separated_path({
+            path_func = path_func,
+            separator = "/",
+            suffix = false,
+            max_depth = 10,
+          }),
           hl = { fg = "gray" },
         },
         status.component.fill(),
@@ -158,38 +165,46 @@ return {
         status.component.virtual_env(),
         status.component.treesitter(),
         status.component.nav(),
-        status.component.mode { surround = { separator = "right" } },
+        status.component.mode({ surround = { separator = "right" } }),
       }
 
       opts.winbar = nil
 
       opts.tabline = { -- tabline
-        { -- file tree padding
+        {           -- file tree padding
           condition = function(self)
             self.winid = vim.api.nvim_tabpage_list_wins(0)[1]
             self.winwidth = vim.api.nvim_win_get_width(self.winid)
-            return self.winwidth ~= vim.o.columns -- only apply to sidebars
-              and not require("astrocore.buffer").is_valid(vim.api.nvim_win_get_buf(self.winid)) -- if buffer is not in tabline
+            return self.winwidth ~= vim.o.columns                                         -- only apply to sidebars
+                and not require("astrocore.buffer").is_valid(vim.api.nvim_win_get_buf(self.winid)) -- if buffer is not in tabline
           end,
-          provider = function(self) return (" "):rep(self.winwidth + 1) end,
+          provider = function(self)
+            return (" "):rep(self.winwidth + 1)
+          end,
           hl = { bg = "tabline_bg" },
         },
         status.heirline.make_buflist(status.component.tabline_file_info()), -- component for each buffer tab
-        status.component.fill { hl = { bg = "tabline_bg" } }, -- fill the rest of the tabline with background color
-        { -- tab list
-          condition = function() return #vim.api.nvim_list_tabpages() >= 2 end, -- only show tabs if there are more than one
-          status.heirline.make_tablist { -- component for each tab
+        status.component.fill({ hl = { bg = "tabline_bg" } }),          -- fill the rest of the tabline with background color
+        {                                                               -- tab list
+          condition = function()
+            return #vim.api.nvim_list_tabpages() >= 2
+          end,                      -- only show tabs if there are more than one
+          status.heirline.make_tablist({ -- component for each tab
             provider = status.provider.tabnr(),
-            hl = function(self) return status.hl.get_attributes(status.heirline.tab_type(self, "tab"), true) end,
-          },
+            hl = function(self)
+              return status.hl.get_attributes(status.heirline.tab_type(self, "tab"), true)
+            end,
+          }),
           { -- close button for current tab
-            provider = status.provider.close_button {
+            provider = status.provider.close_button({
               kind = "TabClose",
               padding = { left = 1, right = 1 },
-            },
+            }),
             hl = status.hl.get_attributes("tab_close", true),
             on_click = {
-              callback = function() require("astrocore.buffer").close_tab() end,
+              callback = function()
+                require("astrocore.buffer").close_tab()
+              end,
               name = "heirline_tabline_close_tab_callback",
             },
           },
@@ -197,7 +212,9 @@ return {
       }
 
       opts.statuscolumn = { -- statuscolumn
-        init = function(self) self.bufnr = vim.api.nvim_get_current_buf() end,
+        init = function(self)
+          self.bufnr = vim.api.nvim_get_current_buf()
+        end,
         status.component.foldcolumn(),
         status.component.numbercolumn(),
         status.component.signcolumn(),
@@ -230,7 +247,7 @@ return {
               experimental = {
                 classRegex = {
                   { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-                  { "cx\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                  { "cx\\(([^)]*)\\)",  "[\"'`]([^\"'`]*).*?[\"'`]" },
                 },
               },
             },

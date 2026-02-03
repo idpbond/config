@@ -246,6 +246,9 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     echo "export TERM=xterm-256color" >> ~/.zshrc
     echo "export COLORTERM=24bit" >> ~/.zshrc
 
+    # Prepend hostname to prompt (e.g., [sandbox-zxc])
+    echo 'PROMPT="%F{cyan}[%m]%f $PROMPT"' >> ~/.zshrc
+
     # Setup SSH authorized_keys
     echo "Setting up SSH access..."
     mkdir -p ~/.ssh

@@ -127,6 +127,15 @@ build {
     destination = "/tmp/setup-env.sh"
   }
 
+  # Remove containerd 2.x binaries shipped in the cloud image;
+  # they conflict with the Debian-packaged containerd 1.7.x that
+  # docker.io pulls in (shim version mismatch breaks container starts).
+  provisioner "shell" {
+    inline = [
+      "sudo rm -f /usr/local/bin/containerd*",
+    ]
+  }
+
   provisioner "shell" {
     inline = [
       "chmod +x /tmp/setup-env.sh",

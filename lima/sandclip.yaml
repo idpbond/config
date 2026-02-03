@@ -53,6 +53,11 @@ dns:
   - 8.8.8.8
 
 # VM options for vz (Virtualization.framework)
+# Disable Lima's nerdctl/containerd — the image already has Docker
+containerd:
+  system: false
+  user: false
+
 vmOpts:
   vz:
     rosetta:
@@ -70,6 +75,13 @@ provision:
       if [ -n "$PRIMARY_IF" ]; then
         ip link set "$PRIMARY_IF" mtu 1400
       fi
+
+  # Remove containerd 2.x binaries from cloud image (conflict with Debian-packaged 1.7.x)
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      rm -f /usr/local/bin/containerd*
 
   # Download and run setup script (skips if already provisioned)
   - mode: system
