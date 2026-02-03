@@ -23,6 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Install Packer
         run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -39,6 +45,8 @@ jobs:
 
       - name: Build qcow2 (amd64)
         working-directory: packer
+        env:
+          PACKER_LOG: "1"
         run: packer build -only='qcow2.qemu.sandclip-amd64' sandclip.pkr.hcl
 
       - name: Upload qcow2 artifact (amd64)
@@ -69,6 +77,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Install Packer
         run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -85,6 +99,8 @@ jobs:
 
       - name: Build qcow2 (arm64)
         working-directory: packer
+        env:
+          PACKER_LOG: "1"
         run: packer build -only='qcow2.qemu.sandclip-arm64' sandclip.pkr.hcl
 
       - name: Upload qcow2 artifact (arm64)
