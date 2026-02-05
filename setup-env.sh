@@ -47,7 +47,7 @@ else
 fi
 
 echo "Installing system dependencies..."
-PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release rsync htop btm"
+PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release rsync htop btm ffmpeg imagemagick libvips ncdu jq"
 
 if [ "$IS_ROOT" = true ]; then
     apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
@@ -213,22 +213,26 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     asdf install nodejs $NODE_VERSION
     asdf set --home nodejs $NODE_VERSION
 
-    # Install homebrew
-    echo "Installing homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-    # Install claude-code
+    # Install Agentic Code CLIs
     echo "Installing claude-code..."
     curl -fsSL https://claude.ai/install.sh | bash
+    echo "Installing codex cli..."
+    npm i -g @openai/codex
+    echo "Installing gemini cli..."
+    npm i -g @google/gemini-cli
 
     # Install mise
     echo "Installing mise..."
     curl https://mise.run | bash
 
-    export PATH="~/.local/bin:$PATH"
+    export PATH="~/.local/bin:~/go/bin:/snap/bin:$PATH"
 
     # Install lazydocker
-    brew install lazydocker
+    echo "Installing lazydocker..."
+    go install github.com/jesseduffield/lazydocker@latest
+
+    echo "Installing aws-cli..."
+    sudo snap install aws-cli --classic
 
     # Configure fzf and locale
     echo "Configuring environment..."
