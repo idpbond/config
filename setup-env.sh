@@ -241,7 +241,12 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     if [ "$SKIP_SNAP" != "1" ] && command -v snap &>/dev/null; then
         sudo snap install aws-cli --classic
     else
-        python3 -m pip install --break-system-packages awscli
+        cd /tmp
+        curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o awscliv2.zip
+        unzip -q awscliv2.zip
+        sudo ./aws/install
+        rm -rf awscliv2.zip aws
+        cd -
     fi
 
     # Configure fzf and locale
