@@ -50,10 +50,16 @@ echo "Installing system dependencies..."
 PACKAGES="openssl curl wget git tar lua5.4 bash zsh golang ripgrep ninja-build gettext less man-db cmake unzip ruby ruby-dev tmux lazygit build-essential fzf python3 python3.13-venv neovim ca-certificates gnupg lsb-release rsync htop btm ffmpeg imagemagick libvips ncdu jq"
 
 if [ "$IS_ROOT" = true ]; then
-    apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
+    apt-get install -y --no-install-recommends --ignore-missing $PACKAGES || {
+        echo "Retrying after apt-get update..."
+        apt-get update && apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
+    }
     update-ca-certificates
 else
-    sudo apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
+    sudo apt-get install -y --no-install-recommends --ignore-missing $PACKAGES || {
+        echo "Retrying after apt-get update..."
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends --ignore-missing $PACKAGES
+    }
     sudo update-ca-certificates
 fi
 
@@ -232,7 +238,11 @@ if [ "$1" = "--user-setup" ] || [ "$IS_ROOT" = false ]; then
     go install github.com/jesseduffield/lazydocker@latest
 
     echo "Installing aws-cli..."
-    sudo snap install aws-cli --classic
+    if [ "$SKIP_SNAP" != "1" ] && command -v snap &>/dev/null; then
+        sudo snap install aws-cli --classic
+    else
+        python3 -m pip install --break-system-packages awscli
+    fi
 
     # Configure fzf and locale
     echo "Configuring environment..."
