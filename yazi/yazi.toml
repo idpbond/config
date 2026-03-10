@@ -1,0 +1,26 @@
+[mgr]
+show_hidden = true
+
+[opener]
+smart_open = [
+	{ run = 'if file --mime-encoding %s1 | grep -q binary; then open -R %s1; elif [ -n "$TMUX" ]; then tmux new-window -- nvim %s; else nvim %s; fi', desc = "Smart open", block = true, for = "macos" },
+]
+finder = [
+	{ run = 'open -R %s1', desc = "Finder", for = "macos" },
+]
+
+[open]
+prepend_rules = [
+	{ url = "*", use = [ "smart_open", "finder" ] },
+]
+
+[[plugin.prepend_fetchers]]
+id = "git"
+url = "*"
+run = "git"
+
+[[plugin.prepend_fetchers]]
+id = "git"
+url = "*/"
+run = "git"
+
